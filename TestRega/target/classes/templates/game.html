@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Матч века онлайн</title>
+</head>
+<body>
+<h1 id="greeting">Привет, Гость! Добро пожаловать на матч века онлайн!</h1>
+
+<div>
+    <p id="question">Загрузка вопроса...</p>
+
+    <input type="text" id="answer" placeholder="Введите ваш ответ">
+
+    <button onclick="fetchQuestion()">Загрузить вопрос</button>
+    <button onclick="checkAnswer()">Проверить ответ</button>
+
+    <p id="result"></p>
+    <p id="score"></p>
+    <p id="answerStatus"></p>
+</div>
+
+<script>
+    var score = 0;
+    var correctQuestions = 0;
+    var username = "Гость";
+
+    document.getElementById("greeting").textContent = "Привет, " + username + "! Добро пожаловать на матч века онлайн!";
+
+    function fetchQuestion() {
+        console.log("Fetching question...");
+
+        fetch('https://jservice.io/api/random')
+            .then(response => response.json())
+            .then(data => {
+                console.log("Question fetched:", data[0]);
+
+                document.getElementById("question").textContent = data[0].question;
+
+                document.getElementById("answer").setAttribute("data-answer", data[0].answer);
+
+                document.getElementById("answer").value = "";
+            })
+            .catch(error => {
+                console.error('Произошла ошибка:', error);
+            });
+    }
+
+    function checkAnswer() {
+        console.log("Checking answer...");
+
+        var userAnswer = document.getElementById("answer").value;
+
+        var correctAnswer = document.getElementById("answer").getAttribute("data-answer");
+
+        var resultElement = document.getElementById("result");
+
+        if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+            resultElement.textContent = "Правильно!";
+            score += 1;
+            correctQuestions += 1;
+        } else {
+            resultElement.textContent = "Неправильно! Правильный ответ: " + correctAnswer;
+        }
+
+        var scoreElement = document.getElementById("score");
+        scoreElement.textContent = "Набранные очки: " + score;
+
+        var answerStatusElement = document.getElementById("answerStatus");
+        answerStatusElement.textContent = "Последний ответ: " + (userAnswer.toLowerCase() === correctAnswer.toLowerCase() ? "Правильно" : "Неправильно");
+
+        console.log("Answer checked:", {
+            userAnswer: userAnswer,
+            correctAnswer: correctAnswer,
+            isCorrect: userAnswer.toLowerCase() === correctAnswer.toLowerCase(),
+            score: score
+        });
+    }
+</script>
+</body>
+</html>
